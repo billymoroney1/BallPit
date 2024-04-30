@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
@@ -51,37 +52,37 @@ public class BallPit extends ApplicationAdapter {
 		Gdx.input.setInputProcessor(camController);
 
 		assets = new AssetManager();
-		assets.load("assets/ship.g3db", Model.class);
-		assets.load("assets/block.obj", Model.class);
-		assets.load("assets/invader.obj", Model.class);
-		assets.load("assets/spacesphere.obj", Model.class);
+		assets.load("assets/loadscene/data/invaderscene.g3db", Model.class);
 		loading = true;
 	}
 
 	private void doneLoading() {
-		ship = new ModelInstance(assets.get("assets/ship.g3db", Model.class));
-		ship.transform.setToRotation(Vector3.Y, 180).trn(0, 0, 6f);
-		instances.add(ship);
+		Model model = assets.get("assets/loadscene/data/invaderscene.g3db", Model.class);
+		for (int i = 0; i < model.nodes.size; i++){
+			String id = model.nodes.get(i).id;
+			ModelInstance instance = new ModelInstance(model, id);
+			Node node = instance.getNode(id);
 
-		Model blockModel = assets.get("assets/block.obj", Model.class);
-		for (float x = -5f; x <= 5f; x += 2f) {
-			ModelInstance block = new ModelInstance(blockModel);
-			block.transform.setToTranslation(x, 0, 3f);
-			instances.add(block);
-			blocks.add(block);
-		}
+			instance.transform.set(node.globalTransform);
+			node.translation.set(0,0,0);
+			node.scale.set(1,1,1);
+			node.rotation.idt();
+			instance.calculateTransforms();
 
-		Model invaderModel = assets.get("assets/invader.obj", Model.class);
-		for (float x = -5f; x <= 5f; x += 2f) {
-			for (float z = -8f; z <= 0f; z += 2f) {
-				ModelInstance invader = new ModelInstance(invaderModel);
-				invader.transform.setToTranslation(x, 0, z);
-				instances.add(invader);
-				invaders.add(invader);
+			if (id.equals("space")) {
+				space = instance;
+				continue;
 			}
-		}
 
-		space = new ModelInstance(assets.get("assets/spacesphere.obj", Model.class));
+			instances.add(instance);
+
+			if (id.equals("ship"))
+				ship = instance;
+			else if (id.startsWith("block"))
+				blocks.add(instance);
+			else if (id.startsWith("invader"))
+				invaders.add(instance);
+		}
 
 		loading = false;
 	}
