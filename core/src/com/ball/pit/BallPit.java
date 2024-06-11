@@ -41,8 +41,10 @@ public class BallPit extends InputAdapter implements ApplicationListener {
 			Gdx.app.log("TAG", controller.getName());
 		}
 
-		controller = Controllers.getControllers().get(0);
-		System.out.println("axis count: " + controller.getAxisCount());
+		if(Controllers.getControllers().size > 0){
+			controller = Controllers.getControllers().get(0);
+			System.out.println("axis count: " + controller.getAxisCount());
+		}
 
 		camController = new CameraInputController(cam);
 		Gdx.input.setInputProcessor(camController);
@@ -71,10 +73,12 @@ public class BallPit extends InputAdapter implements ApplicationListener {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		float leftStickX = controller.getAxis(0);
-		float leftStickY = controller.getAxis(1);
-		float rightStickX = controller.getAxis(2);
-		float rightStickY = controller.getAxis(3);
+		if (controller != null){
+			float leftStickX = controller.getAxis(0);
+			float leftStickY = controller.getAxis(1);
+			float rightStickX = controller.getAxis(2);
+			float rightStickY = controller.getAxis(3);
+		}
 
 		modelBatch.begin(cam);
 		modelBatch.render(instances, environment);
