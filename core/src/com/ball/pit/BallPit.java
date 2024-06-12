@@ -10,8 +10,12 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.*;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.JsonReader;
 
 public class BallPit extends InputAdapter implements ApplicationListener {
 	protected PerspectiveCamera cam;
@@ -22,6 +26,8 @@ public class BallPit extends InputAdapter implements ApplicationListener {
 	protected Environment environment;
 	protected boolean loading;
 	protected Controller controller;
+	protected Node ball;
+	protected ModelInstance pitBallInstance;
 
 	@Override
 	public void create () {
@@ -51,6 +57,7 @@ public class BallPit extends InputAdapter implements ApplicationListener {
 
 		assets = new AssetManager();
 		assets.load("halfpipe.g3db", Model.class);
+		assets.load("pitball.g3db", Model.class);
 		loading = true;
 
 	}
@@ -59,6 +66,14 @@ public class BallPit extends InputAdapter implements ApplicationListener {
 		Model halfPipe = assets.get("halfpipe.g3db", Model.class);
 		ModelInstance halfPipeInstance = new ModelInstance(halfPipe);
 		instances.add(halfPipeInstance);
+
+		Model ballModel = assets.get("pitball.g3db", Model.class);
+		pitBallInstance = new ModelInstance(ballModel);
+		instances.add(pitBallInstance);
+
+		ball = pitBallInstance.getNode("Sphere");
+		// discovered that the translation of the ball and teh halfpipe are 0, so i suspect the halfpipe is off center
+		// need to make a scene with the 2 models
 	}
 
 	private int visibleCount;
@@ -78,6 +93,13 @@ public class BallPit extends InputAdapter implements ApplicationListener {
 			float leftStickY = controller.getAxis(1);
 			float rightStickX = controller.getAxis(2);
 			float rightStickY = controller.getAxis(3);
+		}
+
+		if (ball != null && pitBallInstance != null){
+			ball.translation.set(0f, ball.translation.y - 0.01f, 0f);
+			pitBallInstance.calculateTransforms();
+
+			System.out.println(">>>> ball.translation :: " + ball.translation.toString());
 		}
 
 		modelBatch.begin(cam);
