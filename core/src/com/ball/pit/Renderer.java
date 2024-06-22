@@ -2,7 +2,8 @@ package com.ball.pit;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -27,6 +28,8 @@ public class Renderer {
     private final Matrix3 normal3 = new Matrix3();
 
     private PerspectiveCamera camera;
+    private Vector3 rotationAxis = new Vector3();
+    private float rotationDirection;
 
     private String status = "";
 
@@ -58,13 +61,13 @@ public class Renderer {
 
     public void render (Simulation simulation, float delta) {
         // gl init
-        GL30 gl = Gdx.gl30;
-        gl.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+        GL20 gl = Gdx.gl;
+        gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         //background render
 
-        gl.glEnable(GL30.GL_DEPTH_TEST);
-        gl.glEnable(GL30.GL_CULL_FACE);
+        gl.glEnable(GL20.GL_DEPTH_TEST);
+        gl.glEnable(GL20.GL_CULL_FACE);
         setProjectionAndCamera(simulation.ball);
 
         // set projection and camera
@@ -76,9 +79,10 @@ public class Renderer {
 
         // Need to understand openGL better to understand this wrapper
 
-        gl.glDisable(GL30.GL_CULL_FACE);
-        gl.glDisable(GL30.GL_DEPTH_TEST);
+        gl.glDisable(GL20.GL_CULL_FACE);
+        gl.glDisable(GL20.GL_DEPTH_TEST);
 
+        spriteBatch.begin();
         spriteBatch.enableBlending();
         font.draw(spriteBatch, status, 0, 320);
         spriteBatch.end();
@@ -88,6 +92,10 @@ public class Renderer {
         ball.transform.getTranslation(tmpV);
         camera.position.set(tmpV.x, 6, 2);
         camera.direction.set(tmpV.x, 0, -4).sub(camera.position).nor();
+        // trying to set camera rotation somehow so i can move with mouse/keyboard
+        rotationAxis.set(1f, 0f, 0f);
+        rotationAxis.crs(camera.direction);
+        camera.rotateAround(tmpV, rotationAxis, rotationDirection);
         camera.update();
     }
 
