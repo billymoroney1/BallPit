@@ -1,5 +1,7 @@
 package com.ball.pit.screens;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.ball.pit.BallPit;
 import com.ball.pit.Renderer;
 import com.ball.pit.simulation.Simulation;
@@ -68,6 +70,8 @@ public class GameLoop extends BallPitScreen implements SimulationListener {
         * pass controller input and delta values to the simluation class
         *
          */
+
+        if(Gdx.input.isKeyPressed(Input.Keys.A)) simulation.rotateCameraLeft(delta, 0.5f);
 
     }
 }

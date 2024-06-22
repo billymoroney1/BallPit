@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerAdapter;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -58,7 +58,7 @@ public class MainMenu extends BallPitScreen {
 
     @Override
     public void draw (float delta) {
-        Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         viewMatrix.setToOrtho2D(0, 0, 480, 320);
         spriteBatch.setProjectionMatrix(viewMatrix);
@@ -68,7 +68,7 @@ public class MainMenu extends BallPitScreen {
         spriteBatch.setColor(Color.WHITE);
 //        spriteBatch.draw(background, 0f, 0f, 480f, 320f, 0f, 0f, 512f, 512f);
         spriteBatch.enableBlending();
-        spriteBatch.setBlendFunction(GL30.GL_ONE, GL30.GL_ONE_MINUS_SRC_ALPHA);
+        spriteBatch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
         glyphLayout.setText(font, "Touch screen to start!");
         font.draw(spriteBatch, glyphLayout, 240 - glyphLayout.width / 2, 128 - font.getLineHeight());
         if (Gdx.app.getType() == Application.ApplicationType.WebGL) {
@@ -83,5 +83,5 @@ public class MainMenu extends BallPitScreen {
         spriteBatch.dispose();
         font.dispose();
     }
-}//        background.dispose();
+}
 
