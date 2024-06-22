@@ -16,7 +16,7 @@ import com.ball.pit.BallPit;
 public class MainMenu extends BallPitScreen {
 
     private final SpriteBatch spriteBatch;
-    private final Texture background;
+//    private final Texture background;
     private final BitmapFont font;
 
     private boolean isDone = false;
@@ -66,7 +66,7 @@ public class MainMenu extends BallPitScreen {
         spriteBatch.begin();
         spriteBatch.disableBlending();
         spriteBatch.setColor(Color.WHITE);
-        spriteBatch.draw(background, 0f, 0f, 480f, 320f, 0f, 0f, 512f, 512f);
+//        spriteBatch.draw(background, 0f, 0f, 480f, 320f, 0f, 0f, 512f, 512f);
         spriteBatch.enableBlending();
         spriteBatch.setBlendFunction(GL30.GL_ONE, GL30.GL_ONE_MINUS_SRC_ALPHA);
         glyphLayout.setText(font, "Touch screen to start!");
@@ -81,7 +81,7 @@ public class MainMenu extends BallPitScreen {
     @Override
     public void dispose () {
         spriteBatch.dispose();
-        background.dispose();
         font.dispose();
     }
-}
+}//        background.dispose();
+

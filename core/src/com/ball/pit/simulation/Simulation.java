@@ -24,8 +24,10 @@ public class Simulation implements Disposable {
     private void populate () {
         // how load g3dj?
         ObjLoader objLoader = new ObjLoader();
-        ballModel = objLoader.loadModel(Gdx.files.internal("data/pitball.g3dj"));
-        stageModel = objLoader.loadModel(Gdx.files.internal("data/halfpipe.g3dj"));
+
+        //g3dj files result in null models, why? file is def found because it specifically errors if you change this path
+        ballModel = objLoader.loadModel(Gdx.files.internal("pitball.g3dj"));
+        stageModel = objLoader.loadModel(Gdx.files.internal("halfpipe.g3dj"));
 
         ball = new Ball(ballModel);
         stage = new Stage(stageModel, 0f, 0f, 0f);
