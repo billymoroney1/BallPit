@@ -37,9 +37,15 @@ public class Simulation implements Disposable {
         stageModel = modelLoader.loadModel(Gdx.files.getFileHandle("data/halfpipe.g3db", Files.FileType.Internal));
 
         ball = new Ball(ballModel);
-        Vector3 ballPosition = new Vector3();
-        ball.transform.getTranslation(ballPosition);
-        stage = new Stage(stageModel, ballPosition.x, ballPosition.y - 100f, ballPosition.z);
+
+//        stage = new Stage(stageModel, ballPosition.x, ballPosition.y - 10f, ballPosition.z);
+
+        Vector3 stagePosition = new Vector3();
+        stage = new Stage(stageModel);
+        stage.transform.getTranslation(stagePosition);
+        ball = new Ball(ballModel, stagePosition.x + -40f, stagePosition.y + 25f, stagePosition.z);
+//        Vector3 ballPosition = new Vector3();
+//        ball.transform.getTranslation(ballPosition);
     }
 
     public void update (float delta) {
@@ -52,9 +58,5 @@ public class Simulation implements Disposable {
     public void dispose () {
         ballModel.dispose();
         stageModel.dispose();
-    }
-
-    public void rotateCameraLeft(float delta, float increment){
-
     }
 }

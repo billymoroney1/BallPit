@@ -2,6 +2,8 @@ package com.ball.pit.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.controllers.ControllerAdapter;
+import com.badlogic.gdx.controllers.ControllerListener;
 import com.ball.pit.BallPit;
 import com.ball.pit.Renderer;
 import com.ball.pit.simulation.Simulation;
@@ -14,14 +16,7 @@ public class GameLoop extends BallPitScreen implements SimulationListener {
 
     // can put a controller listener here to send commands to the simulation listener?
 
-    /*
-    *
-    *
-    * Handle controller input
-    *
-    *
-    *
-     */
+    private ControllerListener listener = new ControllerAdapter();
 
     public GameLoop (BallPit ballPit) {
         super(ballPit);
@@ -34,17 +29,17 @@ public class GameLoop extends BallPitScreen implements SimulationListener {
         * Sound effect file load?
          */
 
-//        if (ballPit.getController() != null) {
-//            ballPit.getController().addListener(listener);
-//        }
+        if (ballPit.getController() != null) {
+            ballPit.getController().addListener(listener);
+        }
     }
 
     @Override
     public void dispose() {
         renderer.dispose();
-//        if (ballPit.getController() != null) {
-//            ballPit.getController().removeListener(listener);
-//        }
+        if (ballPit.getController() != null) {
+            ballPit.getController().removeListener(listener);
+        }
         simulation.dispose();
     }
 
@@ -64,14 +59,26 @@ public class GameLoop extends BallPitScreen implements SimulationListener {
     public void update (float delta){
         simulation.update(delta);
 
+        processInput(delta);
+
+    }
+
+    private void processInput(float delta) {
+
         /*
-        *
-        * control input handling here?
-        * pass controller input and delta values to the simluation class
-        *
+         *
+         * control input handling here?
+         * pass controller input and delta values to the simluation class
+         *
          */
 
-        if(Gdx.input.isKeyPressed(Input.Keys.A)) simulation.rotateCameraLeft(delta, 0.5f);
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            renderer.rotateCameraLeft(delta);
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            renderer.rotateCameraRight(delta);
+        }
 
     }
 }

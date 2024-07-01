@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -28,6 +29,7 @@ public class Renderer {
     private final Matrix3 normal3 = new Matrix3();
 
     private PerspectiveCamera camera;
+    private FirstPersonCameraController cameraController;
     private Vector3 rotationAxis = new Vector3();
     private float rotationDirection;
 
@@ -39,6 +41,12 @@ public class Renderer {
     ModelBatch modelBatch;
 
     Environment lights;
+
+    // Camera
+    private float distanceFromPlayer = 20f;
+    private float camPitch = 20f;
+    private float angleAroundPlayer = 0f;
+    private float angleBehindPlayer = 0f;
 
     public Renderer () {
         try {
@@ -54,6 +62,12 @@ public class Renderer {
             // can print a status message on screen
 
             camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//            camera.near = 1f;
+//            camera.far = 200;
+            camera.position.set(0, 0, 4f);
+
+            cameraController = new FirstPersonCameraController(camera);
+            Gdx.input.setInputProcessor(cameraController);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -69,8 +83,6 @@ public class Renderer {
         gl.glEnable(GL20.GL_DEPTH_TEST);
         gl.glEnable(GL20.GL_CULL_FACE);
         setProjectionAndCamera(simulation.ball);
-
-        // set projection and camera
 
         modelBatch.begin(camera);
         modelBatch.render(simulation.ball);
@@ -89,14 +101,49 @@ public class Renderer {
     }
 
     public void setProjectionAndCamera(Ball ball){
+
+        float horDistance = calculateHorizontalDistance(distanceFromPlayer);
+        float vertDistance = calculateVerticalDistance(distanceFromPlayer);
+
         ball.transform.getTranslation(tmpV);
-        camera.position.set(tmpV.x, 6, 2);
-        camera.direction.set(tmpV.x, 0, -4).sub(camera.position).nor();
-        // trying to set camera rotation somehow so i can move with mouse/keyboard
-        rotationAxis.set(1f, 0f, 0f);
-        rotationAxis.crs(camera.direction);
-        camera.rotateAround(tmpV, rotationAxis, rotationDirection);
+
+        calculatePitch();
+        calculateAngleAroundBall();
+        calculateCameraPosition(tmpV, horDistance, vertDistance);
+
+        camera.up.set(Vector3.Y);
+
+        camera.lookAt(tmpV);
         camera.update();
+    }
+
+    private void calculateCameraPosition(Vector3 currentPosition, float horDistance, float vertDistance) {
+        float offsetX = (float) (horDistance * Math.sin(Math.toRadians(angleAroundPlayer)));
+        float offsetZ = (float) (horDistance * Math.cos(Math.toRadians(angleAroundPlayer)));
+
+        camera.position.x = currentPosition.x - offsetX;
+        camera.position.z = currentPosition.z - offsetZ;
+        camera.position.y = currentPosition.y + vertDistance;
+    }
+
+    private void calculateAngleAroundBall() {
+        // some logic here if i want free look cam
+        angleAroundPlayer = angleBehindPlayer;
+    }
+
+    private void calculatePitch() {
+        float pitchChange = -Gdx.input.getDeltaY() * 0.3f;
+        camPitch -= pitchChange;
+
+        // min and max pitch
+    }
+
+    public void rotateCameraLeft(float delta){
+        angleBehindPlayer -= 40f * delta;
+    }
+
+    public void rotateCameraRight(float delta) {
+        angleBehindPlayer += 40f * delta;
     }
 
     public void dispose() {
@@ -104,4 +151,11 @@ public class Renderer {
         font.dispose();
     }
 
+    private float calculateHorizontalDistance(float distanceFromPlayer){
+        return (float) (distanceFromPlayer * Math.cos(Math.toRadians(camPitch)));
+    }
+
+    private float calculateVerticalDistance(float distanceFromPlayer){
+        return (float) (distanceFromPlayer * Math.sin(Math.toRadians(camPitch)));
+    }
 }

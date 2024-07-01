@@ -10,6 +10,8 @@ public class Stage extends ModelInstance {
     *
      */
 
+    public Stage (Model model) { super(model); }
+
     public Stage (Model model, float x, float y, float z) { super(model, x, y, z); }
 
     public void update(float delta){

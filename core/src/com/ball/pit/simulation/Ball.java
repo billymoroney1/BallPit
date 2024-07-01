@@ -14,6 +14,8 @@ public class Ball extends ModelInstance {
 
     public Ball (Model model) { super(model); }
 
+    public Ball (Model model, float x, float y, float z) { super(model, x, y, z); }
+
     public void update (float delta) {
         // the ball is being moved in simulation, but this can handle a significant change to the fields listed above
     }
