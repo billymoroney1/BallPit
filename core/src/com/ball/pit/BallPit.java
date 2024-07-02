@@ -14,18 +14,24 @@ import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.*;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionConfiguration;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
+import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
+import com.badlogic.gdx.physics.bullet.collision.btDispatcher;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.ball.pit.screens.BallPitScreen;
 import com.ball.pit.screens.GameLoop;
 import com.ball.pit.screens.GameOver;
 import com.ball.pit.screens.MainMenu;
+import com.ball.pit.simulation.Collision;
 
 public class BallPit extends Game {
 	protected PerspectiveCamera cam;
 	protected CameraInputController camController;
-	protected ModelBatch modelBatch;
-	protected AssetManager assets;
+//	protected ModelBatch modelBatch;
+//	protected AssetManager assets;
 	protected Array<ModelInstance> instances = new Array<ModelInstance>();
 	protected Environment environment;
 	protected boolean loading;
@@ -105,6 +111,8 @@ public class BallPit extends Game {
 			}
 		});
 		fps = new FPSLogger();
+
+		Bullet.init();
 	}
 
 //	private void doneLoading() {
@@ -174,9 +182,10 @@ public class BallPit extends Game {
 
 	@Override
 	public void dispose () {
-		modelBatch.dispose();
+//		modelBatch.dispose();
 		instances.clear();
-		assets.dispose();
+//		assets.dispose();
+		Collision.disposeObjects();
 	}
 
 	@Override

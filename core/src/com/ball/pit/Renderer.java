@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.ball.pit.simulation.Ball;
+import com.ball.pit.simulation.Collision;
 import com.ball.pit.simulation.Simulation;
 
 public class Renderer {
@@ -86,7 +87,9 @@ public class Renderer {
 
         modelBatch.begin(camera);
         modelBatch.render(simulation.ball);
-        modelBatch.render(simulation.stage);
+//        modelBatch.render(simulation.stage);
+        modelBatch.render(simulation.ground);
+//        modelBatch.render(simulation.testBall);
         modelBatch.end();
 
         // Need to understand openGL better to understand this wrapper

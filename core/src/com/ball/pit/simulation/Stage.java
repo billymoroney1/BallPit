@@ -2,6 +2,8 @@ package com.ball.pit.simulation;
 
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 
 public class Stage extends ModelInstance {
     /*
@@ -10,9 +12,13 @@ public class Stage extends ModelInstance {
     *
      */
 
-    public Stage (Model model) { super(model); }
+    public Stage (Model model) {
+        super(model);
+    }
 
-    public Stage (Model model, float x, float y, float z) { super(model, x, y, z); }
+    public Stage (Model model, float x, float y, float z) {
+        super(model, x, y, z);
+    }
 
     public void update(float delta){
         // what would i do in here? change stage?
