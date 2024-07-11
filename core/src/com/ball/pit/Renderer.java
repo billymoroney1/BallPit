@@ -87,8 +87,8 @@ public class Renderer {
 
         modelBatch.begin(camera);
         modelBatch.render(simulation.ball);
-//        modelBatch.render(simulation.stage);
-        modelBatch.render(simulation.ground);
+        modelBatch.render(simulation.stage);
+//        modelBatch.render(simulation.ground);
 //        modelBatch.render(simulation.testBall);
         modelBatch.end();
 

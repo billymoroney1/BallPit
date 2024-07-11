@@ -46,11 +46,11 @@ public class Simulation implements Disposable {
 
         ball = new Ball(ballModel);
 
-//        stage = new Stage(stageModel, ballPosition.x, ballPosition.y - 10f, ballPosition.z);
+//        stage = new Stage(stageModel);
 
         Vector3 stagePosition = new Vector3();
-        stage = new Stage(stageModel);
-        stage.transform.getTranslation(stagePosition);
+//        stage = new Stage(stageModel);
+//        stage.transform.getTranslation(stagePosition);
 //        ball = new Ball(ballModel, stagePosition.x + -40f, stagePosition.y + 25f, stagePosition.z);
         ball = new Ball(ballModel, 0, 9f, 0);
 //        Vector3 ballPosition = new Vector3();
@@ -65,10 +65,11 @@ public class Simulation implements Disposable {
         mb.part("sphere", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN))).sphere(1f, 1f, 1f, 10, 10);
         Model model = mb.end();
         ground = new ModelInstance(model, "ground");
+        stage = new Stage(model);
         testBall = new ModelInstance(model, "ball");
         testBall.transform.setToTranslation(0, 9f, 0);
 
-//        Collision.init(ball, stage);
+        Collision.init(ball, stage);
 
         Collision.init(ball, ground);
     }

@@ -73,4 +73,8 @@ public class Collision {
         ballObject.setWorldTransform(transform);
     }
 
+    public static void setStageObjectTransform(Matrix4 transform) {
+        stageObject.setWorldTransform(transform);
+    }
+
 }

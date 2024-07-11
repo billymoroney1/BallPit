@@ -2,17 +2,22 @@ package com.ball.pit.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerAdapter;
 import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
 import com.ball.pit.BallPit;
 import com.ball.pit.Renderer;
+import com.ball.pit.controllers.XBox360Pad;
 import com.ball.pit.simulation.Simulation;
 import com.ball.pit.simulation.SimulationListener;
+import com.ball.pit.simulation.StageController;
 
-public class GameLoop extends BallPitScreen implements SimulationListener {
+public class GameLoop extends BallPitScreen implements SimulationListener, ControllerListener {
 
     private final Simulation simulation;
     private final Renderer renderer;
+    Controller controller;
 
     // can put a controller listener here to send commands to the simulation listener?
 
@@ -23,6 +28,8 @@ public class GameLoop extends BallPitScreen implements SimulationListener {
         simulation = new Simulation();
         simulation.listener = this;
         renderer = new Renderer();
+        // this is necessary for controller input to register in this class
+        Controllers.addListener(this);
 
         /*
         *
@@ -31,6 +38,7 @@ public class GameLoop extends BallPitScreen implements SimulationListener {
 
         if (ballPit.getController() != null) {
             ballPit.getController().addListener(listener);
+            controller = ballPit.getController();
         }
     }
 
@@ -60,6 +68,7 @@ public class GameLoop extends BallPitScreen implements SimulationListener {
         simulation.update(delta);
 
         processInput(delta);
+//        stageInput(delta);
 
     }
 
@@ -80,5 +89,28 @@ public class GameLoop extends BallPitScreen implements SimulationListener {
             renderer.rotateCameraRight(delta);
         }
 
+        if (controller.getAxis(XBox360Pad.AXIS_LEFT_X) > 0.2f || controller.getAxis(XBox360Pad.AXIS_LEFT_X) < -0.2f){
+            simulation.stage.rotateX(controller.getAxis(XBox360Pad.AXIS_LEFT_X));
+        }
+
+        if (controller.getAxis(XBox360Pad.AXIS_LEFT_Y) > 0.2f || controller.getAxis(XBox360Pad.AXIS_LEFT_Y) < -0.2f){
+            simulation.stage.rotateY(controller.getAxis(XBox360Pad.AXIS_LEFT_Y));
+        }
+    }
+
+    public void connected(Controller controller){
+        System.out.println("Connected! :: " + controller);
+    }
+
+    public void disconnected(Controller controller){
+        System.out.println("Disconnected! :: " + controller);
+    };
+
+    public boolean buttonDown(Controller controller, int var2){return false;}
+    public boolean buttonUp(Controller controller, int var2){return false;}
+
+    @Override
+    public boolean axisMoved(Controller controller, int axisCode, float value) {
+        return false;
     }
 }
