@@ -6,6 +6,10 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.*;
+import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
+import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 
 public class Collision {
     public static boolean collision;
@@ -15,10 +19,22 @@ public class Collision {
     static btCollisionObject stageObject;
     static btCollisionConfiguration collisionConfig;
     static btDispatcher dispatcher;
+    static btDynamicsWorld dynamicsWorld;
+    static btConstraintSolver constraintSolver;
+    static btBroadphaseInterface broadphase;
+    static btCollisionWorld collisionWorld;
+    static Simulation.MyContactListener contactListener;
+
+    // should these fields be static with this init method, or should i choose another pattern
 
     public static void init(ModelInstance ball, ModelInstance stage){
         collisionConfig = new btDefaultCollisionConfiguration();
         dispatcher = new btCollisionDispatcher(collisionConfig);
+        broadphase = new btDbvtBroadphase();
+        constraintSolver = new btSequentialImpulseConstraintSolver();
+        dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
+        dynamicsWorld.setGravity(new Vector3(0, -10f, 0));
+//        contactListener = new MyContactListener();
 
 //        ballShape = Bullet.obtainStaticNodeShape(ball.nodes);
 //        stageShape = Bullet.obtainStaticNodeShape(stage.nodes);
@@ -76,5 +92,16 @@ public class Collision {
     public static void setStageObjectTransform(Matrix4 transform) {
         stageObject.setWorldTransform(transform);
     }
+
+    // generic method for many collision objects, depends on an Array of ModelInstances
+
+//    class MyContactListener extends ContactListener {
+//        @Override
+//        public boolean onContactAdded (btManifoldPoint cp, btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
+//                                       btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
+//            instances.get(colObj0Wrap.getCollisionObject().getuserValue()).moving = false;
+//            instances.get(colObj1Wrap.getCollisionObject().getUserValue()).moving = false;
+//        }
+//    }
 
 }

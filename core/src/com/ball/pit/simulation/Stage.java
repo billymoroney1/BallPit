@@ -20,8 +20,8 @@ public class Stage extends ModelInstance {
     private Quaternion rotation = new Quaternion();
 
     public Stage (Model model) {
-//        super(model, "ground");
-        super(model);
+        super(model, "ground");
+//        super(model);
     }
 
     public Stage (Model model, float x, float y, float z) {
