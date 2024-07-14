@@ -16,6 +16,10 @@ import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.*;
+import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
+import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.UBJsonReader;
@@ -28,7 +32,6 @@ public class Simulation implements Disposable {
     public ModelInstance ground;
     public ModelInstance testBall;
     public transient SimulationListener listener;
-    public ArrayMap<String, GameObject.Constructor> constructors;
 
     // what is this definition?
 
@@ -50,14 +53,18 @@ public class Simulation implements Disposable {
     MyContactListener contactListener;
     btBroadphaseInterface broadphase;
     btCollisionWorld collisionWorld;
+    btConstraintSolver constraintSolver;
+    btDynamicsWorld dynamicsWorld;
 
-    ArrayList<GameObject> instances;
+    ArrayList<GameObject> instances = new ArrayList<GameObject>();
 
     class MyContactListener extends ContactListener {
         @Override
         public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
-            instances.get(userValue0).moving = false;
-            instances.get(userValue1).moving = false;
+            if (userValue0 != 0)
+                ((ColorAttribute)instances.get(userValue0).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
+            if (userValue1 != 0)
+                ((ColorAttribute)instances.get(userValue1).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
             return true;
         }
     }
@@ -80,24 +87,34 @@ public class Simulation implements Disposable {
 //        mb.part("sphere", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN))).sphere(1f, 1f, 1f, 10, 10);
         Model model = mb.end();
 
-        //Generic game object constructor pattern
-        constructors = new ArrayMap<String, GameObject.Constructor>(String.class, GameObject.Constructor.class);
-        constructors.put("ground", new GameObject.Constructor(model, "ground", new btBoxShape(new Vector3(2.5f, 0.5f, 2.5f)), 0f));
-        constructors.put("ball", new GameObject.Constructor(ballModel, "ball", new btSphereShape(3f), 1f));
-
         // Initialize model instances
         ground = new ModelInstance(model, "ground");
-//        stage = new Stage(model);
-        ball = new Ball(ballModel, 0, 9f, 0);
-//        testBall = new ModelInstance(model, "ball");
-//        testBall.transform.setToTranslation(0, 9f, 0);
+
+        // need to try and execute the constructor info but in a way that can be native to the sub classes?
+        ball = new Ball(ballModel, "Sphere", new btSphereShape(0.65f), new Vector3(), 1f);
+        ball.body.setWorldTransform(ball.transform);
+        ball.transform.trn(0f, 20f, 0f);
+        ball.body.proceedToTransform(ball.transform);
+        ball.body.setCollisionFlags(ball.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+        instances.add(ball);
+        stage = new Stage(model, "ground", new btBoxShape(new Vector3(2.5f, 0.5f, 2.5f)), new Vector3(), 0f);
+        instances.add(stage);
+
 
         // Collision Configuration
         collisionConfig = new btDefaultCollisionConfiguration();
         dispatcher = new btCollisionDispatcher(collisionConfig);
         broadphase = new btDbvtBroadphase();
+        constraintSolver = new btSequentialImpulseConstraintSolver();
+        dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
+        dynamicsWorld.setGravity(new Vector3(0, -10f, 0));
         collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
         contactListener = new MyContactListener();
+
+        dynamicsWorld.addRigidBody(ball.body, OBJECT_FLAG, GROUND_FLAG);
+        dynamicsWorld.addRigidBody(stage.body, GROUND_FLAG, ALL_FLAG);
+
+
 
         // Populate instances with ground
 //        instances = new ArrayList<GameObject>();
@@ -113,9 +130,11 @@ public class Simulation implements Disposable {
     }
 
     public void update (float delta) {
+        dynamicsWorld.stepSimulation(delta, 5, 1f / 60f);
         ball.update(delta);
+//        ball.body.getWorldTransform(ball.transform);
         stage.update(delta);
-        // check condition for next level
+//        stage.body.getWorldTransform(stage.transform);
     }
 
     @Override
@@ -127,14 +146,12 @@ public class Simulation implements Disposable {
             obj.dispose();
         instances.clear();
 
-        for (GameObject.Constructor ctor : constructors.values())
-            ctor.dispose();
-        constructors.clear();
-
         collisionWorld.dispose();
         broadphase.dispose();
         dispatcher.dispose();
         collisionConfig.dispose();
+        dynamicsWorld.dispose();
+        constraintSolver.dispose();
 
         contactListener.dispose();
     }

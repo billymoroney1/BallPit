@@ -7,8 +7,9 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 
-public class Stage extends ModelInstance {
+public class Stage extends GameObject {
     /*
     *
     * any values pertaining to stage size/boundaries?
@@ -19,19 +20,18 @@ public class Stage extends ModelInstance {
     private Vector3 movePosition = new Vector3(0f, 0f, 0f);
     private Quaternion rotation = new Quaternion();
 
-    public Stage (Model model) {
-        super(model, "ground");
-//        super(model);
+    public Stage (Model model, String node, btCollisionShape shape, Vector3 localInertia, float mass) {
+        super(model, node, shape, localInertia, mass);
     }
 
-    public Stage (Model model, float x, float y, float z) {
-        super(model, x, y, z);
-    }
+//    public Stage (Model model, float x, float y, float z) {
+//        super(model, x, y, z);
+//    }
 
     public void update(float delta){
         // what would i do in here? change stage?
         applyRotation();
-        Collision.setStageObjectTransform(this.transform);
+//        Collision.setStageObjectTransform(this.transform);
     }
 
     public void rotateX(float amount){

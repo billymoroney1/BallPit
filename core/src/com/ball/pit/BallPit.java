@@ -1,31 +1,20 @@
 package com.ball.pit;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerAdapter;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.*;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionConfiguration;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
-import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
-import com.badlogic.gdx.physics.bullet.collision.btDispatcher;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.JsonReader;
 import com.ball.pit.screens.BallPitScreen;
 import com.ball.pit.screens.GameLoop;
 import com.ball.pit.screens.GameOver;
 import com.ball.pit.screens.MainMenu;
-import com.ball.pit.simulation.Collision;
 
 public class BallPit extends Game {
 	protected PerspectiveCamera cam;
@@ -185,7 +174,7 @@ public class BallPit extends Game {
 //		modelBatch.dispose();
 		instances.clear();
 //		assets.dispose();
-		Collision.disposeObjects();
+//		Collision.disposeObjects();
 	}
 
 	@Override
