@@ -60,11 +60,15 @@ public class Simulation implements Disposable {
 
     class MyContactListener extends ContactListener {
         @Override
-        public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
-            if (userValue0 != 0)
+        public boolean onContactAdded (int userValue0, int partId0, int index0, boolean match0, int userValue1, int partId1, int index1, boolean match1) {
+            if (match0){
+                System.out.println("match0");
                 ((ColorAttribute)instances.get(userValue0).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
-            if (userValue1 != 0)
+            }
+            if (match1){
+                System.out.println("match1");
                 ((ColorAttribute)instances.get(userValue1).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
+            }
             return true;
         }
     }
@@ -92,14 +96,15 @@ public class Simulation implements Disposable {
 
         // need to try and execute the constructor info but in a way that can be native to the sub classes?
         ball = new Ball(ballModel, "Sphere", new btSphereShape(0.65f), new Vector3(), 1f);
-        ball.body.setWorldTransform(ball.transform);
         ball.transform.trn(0f, 20f, 0f);
+//        ball.body.setWorldTransform(ball.transform);
+        ball.body.setUserValue(1);
         ball.body.proceedToTransform(ball.transform);
         ball.body.setCollisionFlags(ball.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-        instances.add(ball);
         stage = new Stage(model, "ground", new btBoxShape(new Vector3(2.5f, 0.5f, 2.5f)), new Vector3(), 0f);
+        stage.body.setCollisionFlags(stage.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
         instances.add(stage);
-
+        instances.add(ball);
 
         // Collision Configuration
         collisionConfig = new btDefaultCollisionConfiguration();
@@ -111,8 +116,13 @@ public class Simulation implements Disposable {
         collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
         contactListener = new MyContactListener();
 
-        dynamicsWorld.addRigidBody(ball.body, OBJECT_FLAG, GROUND_FLAG);
-        dynamicsWorld.addRigidBody(stage.body, GROUND_FLAG, ALL_FLAG);
+        dynamicsWorld.addRigidBody(ball.body);
+        ball.body.setContactCallbackFlag(OBJECT_FLAG);
+        ball.body.setContactCallbackFilter(GROUND_FLAG);
+        dynamicsWorld.addRigidBody(stage.body);
+        stage.body.setContactCallbackFlag(GROUND_FLAG);
+        stage.body.setContactCallbackFilter(0);
+        stage.body.setActivationState(Collision.DISABLE_DEACTIVATION);
 
 
 
