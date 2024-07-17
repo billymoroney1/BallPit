@@ -33,13 +33,23 @@ public class GameObject extends ModelInstance implements Disposable {
 
     static class MyMotionState extends btMotionState {
         Matrix4 transform;
+        Vector3 tempLoc = new Vector3();
+        GameObject object;
+
         @Override
         public void getWorldTransform (Matrix4 worldTrans) {
             worldTrans.set(transform);
         }
         @Override
         public void setWorldTransform(Matrix4 worldTrans) {
-            transform.set(worldTrans);
+            transform.getTranslation(tempLoc);
+            System.out.println(tempLoc.y);
+            if(tempLoc.y > -10f)
+                transform.set(worldTrans);
+            else {
+                System.out.println("this.reset!");
+                this.reset(1, true);
+            }
         }
     }
 
