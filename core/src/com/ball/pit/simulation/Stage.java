@@ -9,6 +9,8 @@ import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 
+import static java.lang.Math.abs;
+
 public class Stage extends GameObject {
     /*
     *
@@ -19,6 +21,8 @@ public class Stage extends GameObject {
     private Matrix4 stageTransform = new Matrix4();
     private Vector3 movePosition = new Vector3(0f, 0f, 0f);
     private Quaternion rotation = new Quaternion();
+    private float currentDegreesX = 0f;
+    private float currentDegreesY = 0f;
 
     public Stage (Model model, String node, btCollisionShape shape, Vector3 localInertia, float mass) {
         super(model, node, shape, localInertia, mass);
@@ -36,14 +40,36 @@ public class Stage extends GameObject {
 
     public void rotateX(float amount){
         stageTransform.set(this.transform);
-        stageTransform.rotate(Vector3.X, amount * 10f);
+
+        currentDegreesX += amount;
+
+        if (currentDegreesX > 20f)
+            currentDegreesX = 20f;
+
+        if (currentDegreesX < -20f)
+            currentDegreesX = -20f;
+
+        if (abs(currentDegreesX) < 20f){
+            stageTransform.rotate(Vector3.X, amount);
+        }
+
         this.transform.set(stageTransform);
         this.transform.translate(movePosition);
     }
 
     public void rotateY(float amount){
         stageTransform.set(this.transform);
-        stageTransform.rotate(Vector3.Y, amount * 10f);
+        currentDegreesY += amount;
+
+        if (currentDegreesY > 20f)
+            currentDegreesY = 20f;
+
+        if (currentDegreesY < -20f)
+            currentDegreesY = -20f;
+
+        if (abs(currentDegreesY) < 20f){
+            stageTransform.rotate(Vector3.Y, amount);
+        }
         this.transform.set(stageTransform);
         this.transform.translate(movePosition);
     }
